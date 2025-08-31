@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Shear & Bending Moment Plotter{% endblock %}
+
+{% block content %}
+<div class="text-center my-5">
+    <h1 class="mb-3">Welcome to the SFD & BMD Plotter</h1>
+    <p class="lead mb-4">
+        This interactive project allows you to choose beam tyoe,input beam length, give concentrated(point) and distributed forces, 
+        and visualize Shear Force Diagrams (SFD) and Bending Moment Diagrams (BMD).<br>
+        
+        Made By KUSHAL N<br>
+        B.Tech 1st year<br>
+        Mathematics and Computing<br>
+        IIT Guwahati<br>
+
+        This was made as a project in the subject: Engineering Mechanics
+    </p>
+    
+    <a href="/menu" class="btn btn-primary btn-lg mb-4">Start Program</a>
+    
+    <div class="mt-5">
+        <h5>Project Repository:</h5>
+        <p>
+            <a href="https://github.com/yourusername/project-repo" target="_blank" class="btn btn-outline-dark me-2">
+                View on GitHub
+            </a>
+            <a href="https://github.com/yourusername/project-repo" target="_blank" class="btn btn-outline-secondary">
+                Download Code
+            </a>
+        </p>
+    </div>
+
+    <div class="mt-5">
+        <h5>How it Works:</h5>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Choose the type of beam.</li>
+            <li class="list-group-item">Enter the lengths of the beam sections.</li>
+            <li class="list-group-item">Input concentrated(point) and distributed forces in the tables.</li>
+            <li class="list-group-item">Submit to generate plots of SFD and BMD.</li>
+            <li class="list-group-item">Download or save the plots as images if needed.(Working on it still, just right click and save for now!!!)</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

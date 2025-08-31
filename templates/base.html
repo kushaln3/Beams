@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}My Project{% endblock %}</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* Gradient background for the body */
+    body {
+      background: linear-gradient(to bottom right, #f0f0f5, #d9d9ff);
+      min-height: 100vh;
+    }
+
+    /* Navbar with purple gradient */
+    .navbar {
+      background: linear-gradient(to right, #6a0dad, #9b59b6);
+      position: relative;
+    }
+header {
+    background: linear-gradient(to bottom, #9b59b6, #6a1b9a); /* purple gradient */
+    color: white; /* makes text visible */
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+    /* Make text stand out */
+    .navbar-brand, .nav-link {
+      color: #6a1b9a !important;
+      font-weight: bold;
+    }
+
+    .navbar-brand:hover, .nav-link:hover {
+      color: #7605bc !important;
+    }
+
+    /* GitHub link on top-right */
+    .github-link {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Container styling */
+    .container {
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    h1, h2, h3, h4 {
+      color: #4b0082;
+    }
+
+    /* Buttons styling */
+    .btn-primary {
+      background: #6a0dad;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: #9b59b6;
+    }
+    .btn-outline-dark {
+      border-color: #6a0dad;
+      color: #6a0dad;
+    }
+    .btn-outline-dark:hover {
+      background: #6a0dad;
+      color: #fff;
+    }
+    .btn-outline-secondary {
+      border-color: #9b59b6;
+      color: #9b59b6;
+    }
+    .btn-outline-secondary:hover {
+      background: #9b59b6;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg" style="background-color: #6a1b9a !important;">
+  <div class="container position-relative">
+    <a class="navbar-brand" href="/" style="color: #e1bee7; font-weight: bold;">SFD & BMD Plotter</a>
+    <a href="https://github.com/yourusername/project-repo" target="_blank"
+       class="btn" style="color: #ffffff; background-color: #9c27b0; border-color: #9c27b0;">
+      GitHub
+    </a>
+  </div>
+</nav>
+
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

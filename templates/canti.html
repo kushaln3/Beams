@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Beam Force Input - SFD & BMD Plotter{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <h2 class="mb-4 text-center" style="color: #6a0dad; font-weight: bold;">Beam Force Input</h2>
+
+  <!-- Header Image -->
+  <div class="text-center mb-4">
+    <img src="/static/canti.png" 
+         alt="Beam Illustration" class="img-fluid rounded shadow-sm">
+  </div>
+
+  <!-- Beam Length -->
+  <div class="card p-4 mb-4">
+    <div class="mb-3">
+      <label for="lengthInput" class="form-label">Beam Length</label>
+      <input type="number" class="form-control" id="lengthInput" placeholder="Enter beam length" required>
+    </div>
+  </div>
+
+  <!-- Concentrated Forces Table -->
+  <div class="card p-4 mb-4">
+    <h4 class="mb-3">Concentrated Forces</h4>
+    <table class="table table-bordered text-center" id="dataTable">
+      <thead>
+        <tr>
+          <th>Distance</th>
+          <th>Force</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Initially empty -->
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-primary" onclick="addRow('dataTable')">Add Row</button>
+  </div>
+
+  <!-- Distributed Forces Table -->
+  <div class="card p-4 mb-4">
+    <h4 class="mb-3">Distributed Forces</h4>
+    <table class="table table-bordered text-center" id="dataTable2">
+      <thead>
+        <tr>
+          <th>Start Point</th>
+          <th>End Point</th>
+          <th>Force Gradient Equation</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Initially empty -->
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-primary" onclick="addRow('dataTable2')">Add Row</button>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="text-center">
+    <button type="button" class="btn btn-success btn-lg" onclick="submitAll()">Submit</button>
+  </div>
+
+</div>
+
+<script>
+  function addRow(tableId) {
+    const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+    const newRow = document.createElement('tr');
+
+    if (tableId === 'dataTable') {
+      newRow.innerHTML = `
+        <td><input type="number" class="form-control" name="distance"></td>
+        <td><input type="number" class="form-control" name="force"></td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td>
+      `;
+    } else if (tableId === 'dataTable2') {
+      newRow.innerHTML = `
+        <td><input type="number" class="form-control" name="idistance"></td>
+        <td><input type="number" class="form-control" name="fdistance"></td>
+        <td><input type="text" class="form-control" name="localeqn" placeholder="e.g. 2*x+5"></td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td>
+      `;
+    }
+
+    tableBody.appendChild(newRow);
+  }
+
+  function removeRow(button) {
+    const row = button.closest('tr');
+    row.remove(); // all rows can be removed
+  }
+
+  function submitAll() {
+    const lengthInput = document.getElementById('lengthInput');
+    if (!lengthInput.value) { alert("Please enter beam length!"); lengthInput.focus(); return; }
+
+    const checkTable = tableId => {
+      const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+      for (let row of table.rows) {
+        for (let input of row.getElementsByTagName('input')) {
+          if (!input.value) { alert("Please fill all fields!"); input.focus(); return false; }
+        }
+      }
+      return true;
+    }
+
+    if (!checkTable('dataTable') || !checkTable('dataTable2')) return;
+
+    const extractTableData = tableId => {
+      const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+      const rows = table.getElementsByTagName('tr');
+      let tableData = [];
+      for (let row of rows) {
+        const inputs = row.getElementsByTagName('input');
+        let rowObj = {};
+        for (let input of inputs) rowObj[input.name || 'col'] = input.value;
+        tableData.push(rowObj);
+      }
+      return tableData;
+    }
+
+    const finalData = {
+      length: parseFloat(lengthInput.value),
+      table1: extractTableData('dataTable'),
+      table2: extractTableData('dataTable2')
+    };
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/simple';
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'json_data';
+    input.value = JSON.stringify(finalData);
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>
+{% endblock %}

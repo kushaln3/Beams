@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Menu - My Project{% endblock %}
+
+{% block content %}
+<div class="text-center my-5">
+    <h2 class="mb-4" style="color: #6a0dad; font-weight: bold;">Select an Option</h2>
+
+    <div class="row justify-content-center g-4">
+        <!-- Simple Beam -->
+        <div class="col-md-4">
+            <a href="/simple" class="btn btn-lg w-100" 
+               style="background-color: #9c27b0; color: #fff; border-radius: 12px; padding: 1.5rem 0; font-size: 1.25rem;">
+                Simple Beam
+            </a>
+        </div>
+
+        <!-- Cantilever Beam -->
+        <div class="col-md-4">
+            <a href="/canti" class="btn btn-lg w-100" 
+               style="background-color: #8e24aa; color: #fff; border-radius: 12px; padding: 1.5rem 0; font-size: 1.25rem;">
+                Cantilever Beam
+            </a>
+        </div>
+
+        <!-- Mixed Beam -->
+        <div class="col-md-4">
+            <a href="/mixed" class="btn btn-lg w-100" 
+               style="background-color: #7b1fa2; color: #fff; border-radius: 12px; padding: 1.5rem 0; font-size: 1.25rem;">
+                Mixed Beam
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hover effects for all buttons */
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+    .btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

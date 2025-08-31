@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import sympy as sp
 import matplotlib.pyplot as plt
+import io
+import base64
+plt.style.use("seaborn-v0_8")
 
 x = sp.symbols('x')
 
@@ -9,55 +12,95 @@ x = sp.symbols('x')
 
 class Printex:
     def Wellcome(self):
-        print('Welcome')
+        print(
+'''
+   _____ ______ _____                      _    ____  __  __ _____          _       _   _            
+  / ____|  ____|  __ \                    | |  |  _ \|  \/  |  __ \        | |     | | | |           
+ | (___ | |__  | |  | |     __ _ _ __   __| |  | |_) | \  / | |  | |  _ __ | | ___ | |_| |_ ___ _ __ 
+  \___ \|  __| | |  | |    / _` | '_ \ / _` |  |  _ <| |\/| | |  | | | '_ \| |/ _ \| __| __/ _ \ '__|
+  ____) | |    | |__| |   | (_| | | | | (_| |  | |_) | |  | | |__| | | |_) | | (_) | |_| ||  __/ |   
+ |_____/|_|    |_____/     \__,_|_| |_|\__,_|  |____/|_|  |_|_____/  | .__/|_|\___/ \__|\__\___|_|   
+                                                                     | |                             
+                                                                     |_|                             
+
+                                                                                                    By KUSHAL N
+
+
+
+
+
+
+''')
     def unstable(self):
         print("The given system is not static and is unstable, Please enter proper values!!!")
+        
 
 
 
-
+def plot_to_img(fig):
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", bbox_inches="tight")
+    buf.seek(0)
+    return base64.b64encode(buf.getvalue()).decode("utf-8")
 
 
 
 class getForces:
-    def __init__(self, length, lengthb, lengthc):
+    def __init__(self, length, lengthb, lengthc, isWeb):
         self.length = length
         self.lengtha = length-lengthb-lengthc
         self.lengthb = lengthb
         self.lengthc = lengthc
+        self.isWeb = isWeb
         
 
-    def getPforces(self):    #Takes input of all the point forces and their respective positions sequentially and returns a dataframe of: distance, force, moment 
+    def getPforces(self, inppF=None):    #Takes input of all the point forces and their respective positions sequentially and returns a dataframe of: distance, force, moment 
         i=1
         pF = pd.DataFrame(columns=['distance', 'force', 'moment'])
-        print(pF)
+
         
         while True:
-            
-            print(f'point Force_{i}', )
-            pF.sort_values(by='distance', inplace=True)
                 
-            try:    
-                dist = float(inp := input(f'Enter the distance of point of application of Force_{i} from origin: '))
-                mag = float(inp := input(f'Enter the Force_{i} with direction: '))
+            if self.isWeb == False:
+                print(pF)
+                print(f'point Force_{i}', )
+                pF.sort_values(by='distance', inplace=True)
+                    
+                try:    
+                    dist = float(inp := input(f'Enter the distance of point of application of Force_{i} from origin: '))
+                    mag = float(inp := input(f'Enter the Force_{i} with direction: '))
 
 
-            except ValueError:
-                if inp.lower() == "q":
-                    print("Quitting force input sequence...")
-                    break
-                elif(dist <=0 or dist > self.length):
-                    print('enter valid distance!!!')
+                except ValueError:
+                    if inp.lower() == "q":
+                        print("Quitting force input sequence...")
+                        break
+                    elif(dist <=0 or dist > self.length):
+                        print('enter valid distance!!!')
+                        continue
+                    else:
+                        print("Invalid input! Please enter a number or 'q'.")
+                        continue
+                pF.loc[len(pF)] = [dist, mag, (dist-self.lengtha)*mag]
+                    
+                
+                print(f'Finished taking {i} forces')
+
+            else:
+
+                print(len(inppF))
+                print((inppF))
+
+                if i<=len(inppF):
+                    dist = float(inppF.loc[i-1,'distance'])
+                    mag = float(inppF.loc[i-1,'force'])
+
+                    pF.loc[len(pF)] = [dist, mag, (dist-self.lengtha)*mag]
+                else:break
 
 
-                else:
-                    print("Invalid input! Please enter a number or 'q'.")
 
 
-            print(f'Finished taking {i} forces')
-
-            pF.loc[len(pF)] = [dist, mag, (dist-self.lengtha)*mag]
-            print(pF)
             i+=1
 
         print(pF)
@@ -69,25 +112,36 @@ class getForces:
 # Takes input of all the distributed forces and their respective positions sequentially and returns a 
 # dataframe of: initial distance, final distance, force equation,equivalent force, equivalent distance, moment
   
-    def getDforces(self):
+    def getDforces(self, inpdF = None):
 
         i=1
         dF = pd.DataFrame(columns=['idistance', 'fdistance', 'localeqn',  'eqforce', 'eqdistance', 'moment'])
         
         while True:
-            try:
-                print(f'Distributed Force_{i}', )
-                idist = float(inp:=input(f'Enter the STARTING point of application of Force_{i} from origin: '))
-                fdist = float(inp:=input(f'Enter the ENDING point of application of Force_{i} from origin: '))
-                localeqn = input(f'Enter the Force_{i} eqn wrt STARTING point: ')
-            except ValueError:
-                if inp.lower() == "q":
-                    print("Quitting force input sequence...")
-                    break
-                elif(idist <=0 or idist > self.length or fdist <=0 or fdist > self.length):
-                    print('enter valid distance!!!')
-                else:
-                    print("Invalid input! Please enter a number or 'q'.")
+            if self.isWeb == False:
+                try:
+                    print(f'Distributed Force_{i}', )
+                    idist = float(inp:=input(f'Enter the STARTING point of application of Force_{i} from origin: '))
+                    fdist = float(inp:=input(f'Enter the ENDING point of application of Force_{i} from origin: '))
+                    localeqn = input(f'Enter the Force_{i} eqn wrt STARTING point: ')
+                except ValueError:
+                    if inp.lower() == "q":
+                        print("Quitting force input sequence...")
+                        break
+                    elif(idist <=0 or idist > self.length or fdist <=0 or fdist > self.length):
+                        print('enter valid distance!!!')
+                    else:
+                        print("Invalid input! Please enter a number or 'q'.")
+
+            else:
+                if i<=len(inpdF):
+                    idist = float(inpdF.loc[i-1,'idistance'])
+                    fdist = float(inpdF.loc[i-1,'fdistance'])
+                    localeqn = inpdF.loc[i-1,'localeqn']
+                else:break
+            # input data from df into idist, fdist and loc eqn
+
+
 
 
             print(f'Finished taking {i} forces')
@@ -162,7 +216,7 @@ class getForces:
 
     def sfd(self):
         plt.figure(1)
-        ax = plt.subplot()
+        fig, ax1 = plt.subplots()
         plt.axhline(y=0, lw=1, color='k')
         plt.axvline(x=0, lw=1, color='k')
 
@@ -226,6 +280,7 @@ class getForces:
         plt.grid(True)
         plt.savefig('SFD_PLT.jpg')
         # plt.show()
+        return plot_to_img(fig)
 
 
 
@@ -235,6 +290,7 @@ class getForces:
 
     def bmd(self):
         plt.figure(2)
+        fig, ax1 = plt.subplots()
         plt.axhline(y=0, lw=1, color='k')
         plt.axvline(x=0, lw=1, color='k')
         x = sp.symbols('x')
@@ -246,7 +302,7 @@ class getForces:
         if breakpoints.shape == (1,):
             return
         breakpoints.sort_values(inplace=True)
-        print('\n\nBMD VALUES')
+        print('\n\nPlotting BMD VALUES...')
         for i in breakpoints:
             x1 = i
             x_vals = np.linspace(x0, x1, 200)
@@ -289,6 +345,8 @@ class getForces:
         plt.grid(True)
 
         plt.savefig('BMD_PLT.jpg')
+        return plot_to_img(fig)
+        # return plt.gcf()
         # plt.show()
 
 

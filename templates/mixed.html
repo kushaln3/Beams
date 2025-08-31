@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Beam Force Input - SFD & BMD Plotter{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Header Image -->
+  <div class="text-center mb-4">
+    <img src="/static/mixed.png" 
+         alt="Beam Illustration" class="img-fluid rounded shadow-sm">
+  </div>
+
+  <h2 class="mb-4 text-center" style="color: #6a0dad; font-weight: bold;">Beam Force Input</h2>
+
+  <!-- Beam Lengths -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <div class="row mb-3">
+      <div class="col">
+        <label for="lengthaInput" class="form-label">Length of Part A</label>
+        <input type="number" class="form-control" id="lengthaInput" placeholder="Enter length A" required>
+      </div>
+      <div class="col">
+        <label for="lengthbInput" class="form-label">Length of Part B</label>
+        <input type="number" class="form-control" id="lengthbInput" placeholder="Enter length B" required>
+      </div>
+      <div class="col">
+        <label for="lengthcInput" class="form-label">Length of Part C</label>
+        <input type="number" class="form-control" id="lengthcInput" placeholder="Enter length C" required>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concentrated Forces Table -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <h4 class="mb-3">Concentrated Forces</h4>
+    <table class="table table-bordered text-center" id="dataTable">
+      <thead class="table-light">
+        <tr>
+          <th>Distance</th>
+          <th>Force</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="number" class="form-control" name="distance" required></td>
+          <td><input type="number" class="form-control" name="force" required></td>
+          <td>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-primary mt-2" onclick="addRow('dataTable')">Add Row</button>
+  </div>
+
+  <!-- Distributed Forces Table -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <h4 class="mb-3">Distributed Forces</h4>
+    <table class="table table-bordered text-center" id="dataTable2">
+      <thead class="table-light">
+        <tr>
+          <th>Start Point</th>
+          <th>End Point</th>
+          <th>Force Gradient Equation</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="number" class="form-control" name="idistance" required></td>
+          <td><input type="number" class="form-control" name="fdistance" required></td>
+          <td><input type="text" class="form-control" name="localeqn" placeholder="e.g. 2*x+5" required></td>
+          <td>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-primary mt-2" onclick="addRow('dataTable2')">Add Row</button>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="text-center">
+    <button type="button" class="btn btn-success btn-lg" onclick="submitAll()">Submit</button>
+  </div>
+
+</div>
+
+
+<script>
+function addRow(tableId) {
+  const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+  const firstRow = tbody.rows[0];
+  const newRow = firstRow.cloneNode(true);
+
+  // Clear inputs and keep required attribute
+  const inputs = newRow.getElementsByTagName('input');
+  for (let i = 0; i < inputs.length; i++) {
+    inputs[i].value = "";
+    inputs[i].setAttribute("required", "");
+  }
+
+  tbody.appendChild(newRow);
+}
+
+function removeRow(button) {
+  const row = button.closest('tr');
+  const tbody = row.parentNode;
+  if (tbody.rows.length > 1) { // keep at least one row
+    tbody.removeChild(row);
+  } else {
+    alert("At least one row must remain.");
+  }
+}
+
+function submitAll() {
+  const lengthA = document.getElementById('lengthaInput');
+  const lengthB = document.getElementById('lengthbInput');
+  const lengthC = document.getElementById('lengthcInput');
+
+  if (!lengthA.value || !lengthB.value || !lengthC.value) {
+    alert("Please enter all beam lengths!");
+    return;
+  }
+
+  const checkTable = tableId => {
+    const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+    for (let row of tbody.rows) {
+      for (let input of row.getElementsByTagName('input')) {
+        if (!input.value) { alert("Please fill all fields!"); input.focus(); return false; }
+      }
+    }
+    return true;
+  };
+
+  if (!checkTable('dataTable') || !checkTable('dataTable2')) return;
+
+  const extractTableData = tableId => {
+    const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+    let data = [];
+    for (let row of tbody.rows) {
+      let rowObj = {};
+      const inputs = row.getElementsByTagName('input');
+      for (let input of inputs) rowObj[input.name || 'col'] = input.value;
+      data.push(rowObj);
+    }
+    return data;
+  };
+
+  const finalData = {
+    lengthA: parseFloat(lengthA.value),
+    lengthB: parseFloat(lengthB.value),
+    lengthC: parseFloat(lengthC.value),
+    table1: extractTableData('dataTable'),
+    table2: extractTableData('dataTable2')
+  };
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/simple';
+
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'json_data';
+  input.value = JSON.stringify(finalData);
+  form.appendChild(input);
+
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>
+{% endblock %}

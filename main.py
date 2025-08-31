@@ -1,8 +1,11 @@
 import beams
 import ops
+from flask import Flask, request, render_template
 import warnings
-
 warnings.simplefilter(action="ignore", category=FutureWarning)
+
+app = Flask(__name__)
+
 
 
 if __name__ == "__main__":
