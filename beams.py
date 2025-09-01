@@ -39,14 +39,13 @@ class Beam:
 
 
         R1, R2, moment = gF.Reactions() # calculates reaction forces at r1 and r2
-        if moment>0:
-            self.printex.unstable() # checks if system is statically stable ie. r2>=0 for simple beam
-        
-        print(R1,R2,'\n',dF,'\n',pF)
-
-        fig1 = gF.sfd()
-        fig2 = gF.bmd()
-        return fig1, fig2
+        if R2<0:
+            print("The given system is not static and is unstable, Please enter proper values!!!") # checks if system is statically stable ie. r2>=0 for simple beam
+            return False, False
+        else:
+            fig1 = gF.sfd()
+            fig2 = gF.bmd()
+            return fig1, fig2
 
 
     def canti(self,lengtha = None, pF = None,dF = None ):
@@ -76,8 +75,8 @@ class Beam:
 
 
         R1,R2,moment = gF.Reactions() # calculates reaction forces at r1 and r2
-        if moment>0:
-            self.printex.unstable() # checks if system is statically stable ie. moment<=0 
+        # if moment>0:
+        #     self.printex.unstable() # checks if system is statically stable ie. moment<=0 
         
         print(R1,'\n',dF,'\n',pF)
 
@@ -124,11 +123,11 @@ class Beam:
 
 
         R1, R2, moment = gF.Reactions() # calculates reaction forces at r1 and r2
-        if moment>0:
-            self.printex.unstable() # checks if system is statically stable ie. moment<=0 
+        if R2<0:
+            print("The given system is not static and is unstable, Please enter proper values!!!")
+            return False,False # checks if system is statically stable ie. moment<=0
         
-        print(R1,'\n',dF,'\n',pF)
-
-        fig1 = gF.sfd()
-        fig2 = gF.bmd()
-        return fig1, fig2
+        else:
+            fig1 = gF.sfd()
+            fig2 = gF.bmd()
+            return fig1, fig2

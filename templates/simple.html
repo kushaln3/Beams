@@ -9,14 +9,13 @@
 
   <!-- Header Image -->
   <div class="text-center mb-4">
-    <img src="/static/simple.png" 
-         alt="Beam Illustration" class="img-fluid rounded shadow-sm">
+    <img src="/static/simple.png" alt="Beam Illustration" class="img-fluid rounded shadow-sm">
   </div>
 
   <p class="lead mb-4">
     CONSIDER LEFT END AS THE ORIGIN AND MEASURE DISTANCES TOWARDS RIGHT AS POSITIVE<br>
     DONT FORGET TO PUT -ve SIGN IF YOUR FORCE IS DOWNWARD.<br>
-    ADD AS MANY FORCES AS YOU WANT, PPLEASE REMOVE BLANK ROWS WITH THE REMOVE BUTTON<br>
+    ADD AS MANY FORCES AS YOU WANT, PLEASE REMOVE BLANK ROWS WITH THE REMOVE BUTTON<br>
   </p>
 
   <!-- Beam Length -->
@@ -27,8 +26,7 @@
     </div>
   </div>
 
-    <p class="lead mb-4">
-    Enter the point forces you want to apply </p>
+  <p class="lead mb-4">Enter the point forces you want to apply</p>
 
   <!-- Concentrated Forces Table -->
   <div class="card p-4 mb-4">
@@ -45,12 +43,11 @@
         <!-- Initially empty -->
       </tbody>
     </table>
-    <button type="button" class="btn btn-primary" onclick="addRow('dataTable')">Add Row</button>
+    <button type="button" class="btn btn-primary" onclick="addRow('dataTable')">Add POINT Force</button>
   </div>
 
   <p class="lead mb-4">
-
-    Enter the distributed force eqn with respect to your starting point of force application (not from your origin!!)<br>
+    Enter the distributed force eqn with respect to your starting point of force application (not from your origin!)<br>
     DONT FORGET TO PUT -ve SIGN IF YOUR FORCE IS DOWNWARD.<br>
   </p>
 
@@ -70,7 +67,7 @@
         <!-- Initially empty -->
       </tbody>
     </table>
-    <button type="button" class="btn btn-primary" onclick="addRow('dataTable2')">Add Row</button>
+    <button type="button" class="btn btn-primary" onclick="addRow('dataTable2')">Add DISTRIBUTED Force</button>
   </div>
 
   <!-- Submit Button -->
@@ -79,7 +76,7 @@
   </div>
 
 </div>
-]
+
 <script>
   function addRow(tableId) {
     const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
@@ -87,15 +84,15 @@
 
     if (tableId === 'dataTable') {
       newRow.innerHTML = `
-        <td><input type="number" class="form-control" name="distance"></td>
-        <td><input type="number" class="form-control" name="force"></td>
+        <td><input type="number" class="form-control position-input" name="distance" placeholder="Enter distance of point force from origin"></td>
+        <td><input type="number" class="form-control" name="force" placeholder="Enter the Force (-ve if downward)"></td>
         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td>
       `;
     } else if (tableId === 'dataTable2') {
       newRow.innerHTML = `
-        <td><input type="number" class="form-control" name="idistance"></td>
-        <td><input type="number" class="form-control" name="fdistance"></td>
-        <td><input type="text" class="form-control" name="localeqn" placeholder="e.g. 2*x+5"></td>
+        <td><input type="number" class="form-control position-input" name="idistance" placeholder="Enter Starting point of force"></td>
+        <td><input type="number" class="form-control position-input" name="fdistance" placeholder="Enter Ending point of force"></td>
+        <td><input type="text" class="form-control" name="localeqn" placeholder="e.g. 2*x+5 or x**2 (-ve for downward, wrt start)"></td>
         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td>
       `;
     }
@@ -105,22 +102,61 @@
 
   function removeRow(button) {
     const row = button.closest('tr');
-    row.remove(); // all rows can be removed
+    row.remove();
   }
 
   function submitAll() {
     const lengthInput = document.getElementById('lengthInput');
-    if (!lengthInput.value) { alert("Please enter beam length!"); lengthInput.focus(); return; }
+    const beamLength = parseFloat(lengthInput.value);
+    if (!beamLength || beamLength <= 0) {
+      alert("Please enter a valid beam length!");
+      lengthInput.focus();
+      return;
+    }
 
     const checkTable = tableId => {
       const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
       for (let row of table.rows) {
-        for (let input of row.getElementsByTagName('input')) {
-          if (!input.value) { alert("Please fill all fields!"); input.focus(); return false; }
+        const inputs = row.getElementsByTagName('input');
+
+        for (let input of inputs) {
+          if (!input.value) {
+            alert("Please fill all fields!");
+            input.focus();
+            return false;
+          }
+        }
+
+        // Validation for positions
+        if (tableId === 'dataTable') {
+          const pos = parseFloat(inputs[0].value); // distance column
+          if (pos < 0 || pos > beamLength) {
+            alert(`Point force distance must be between 0 and ${beamLength}`);
+            inputs[0].focus();
+            return false;
+          }
+        } else if (tableId === 'dataTable2') {
+          const start = parseFloat(inputs[0].value);
+          const end = parseFloat(inputs[1].value);
+          if (start < 0 || start > beamLength) {
+            alert(`Distributed force start must be between 0 and ${beamLength}`);
+            inputs[0].focus();
+            return false;
+          }
+          if (end < 0 || end > beamLength) {
+            alert(`Distributed force end must be between 0 and ${beamLength}`);
+            inputs[1].focus();
+            return false;
+          }
+          if (start > end) {
+            alert("Distributed force start cannot be greater than end");
+            inputs[0].focus();
+            return false;
+          }
         }
       }
       return true;
-    }
+    };
 
     if (!checkTable('dataTable') || !checkTable('dataTable2')) return;
 
@@ -135,10 +171,10 @@
         tableData.push(rowObj);
       }
       return tableData;
-    }
+    };
 
     const finalData = {
-      length: parseFloat(lengthInput.value),
+      length: beamLength,
       table1: extractTableData('dataTable'),
       table2: extractTableData('dataTable2')
     };

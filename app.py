@@ -47,6 +47,8 @@ def simple():
         # print(pF)
         # print(dF)
         fig1, fig2 = beam.simple(lengtha, pF, dF)
+        if fig1 == False:
+            return render_template("unstable_error.html") 
 
         return render_template("output.html", img1=fig1, img2=fig2)
 
@@ -104,6 +106,8 @@ def mixed():
         print(pF)
         print(dF)
         fig1, fig2 = beam.mixed(lengtha,lengthb,lengthc,pF,dF)
+        if fig1 == False:
+            return render_template("unstable_error.html") 
 
         return render_template("output.html", img1=fig1, img2=fig2)
     

@@ -7,18 +7,16 @@
 
   <!-- Header Image -->
   <div class="text-center mb-4">
-    <img src="/static/mixed.png" 
-         alt="Beam Illustration" class="img-fluid rounded shadow-sm">
+    <img src="/static/mixed.png" alt="Beam Illustration" class="img-fluid rounded shadow-sm">
   </div>
 
   <h2 class="mb-4 text-center" style="color: #6a0dad; font-weight: bold;">Beam Force Input</h2>
 
- <p class="lead mb-4">
+  <p class="lead mb-4">
     CONSIDER LEFT END AS THE ORIGIN AND MEASURE DISTANCES TOWARDS RIGHT AS POSITIVE<br>
     DONT FORGET TO PUT -ve SIGN IF YOUR FORCE IS DOWNWARD.<br>
-    ADD AS MANY FORCES AS YOU WANT, PPLEASE REMOVE BLANK ROWS WITH THE REMOVE BUTTON<br>
+    ADD AS MANY FORCES AS YOU WANT, PLEASE REMOVE BLANK ROWS WITH THE REMOVE BUTTON<br>
   </p>
-
 
   <!-- Beam Lengths -->
   <div class="card p-4 mb-4 shadow-sm">
@@ -38,9 +36,8 @@
     </div>
   </div>
 
+  <p class="lead mb-4">Enter the point forces you want to apply</p>
 
-      <p class="lead mb-4">
-    Enter the point forces you want to apply </p>
   <!-- Concentrated Forces Table -->
   <div class="card p-4 mb-4 shadow-sm">
     <h4 class="mb-3">Concentrated Forces</h4>
@@ -54,19 +51,17 @@
       </thead>
       <tbody>
         <tr>
-          <td><input type="number" class="form-control" name="distance" required></td>
-          <td><input type="number" class="form-control" name="force" required></td>
-          <td>
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
-          </td>
+          <td><input type="number" class="form-control" name="distance" placeholder="Enter distance of point force from origin" required></td>
+          <td><input type="number" class="form-control" name="force" placeholder="Enter the Force (-ve if downward)" required></td>
+          <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td>
         </tr>
       </tbody>
     </table>
-    <button type="button" class="btn btn-primary mt-2" onclick="addRow('dataTable')">Add Row</button>
+    <button type="button" class="btn btn-primary mt-2" onclick="addRow('dataTable')">Add POINT Force</button>
   </div>
-  <p class="lead mb-4">
 
-    Enter the distributed force eqn with respect to your starting point of force application (not from your origin!!)<br>
+  <p class="lead mb-4">
+    Enter the distributed force eqn with respect to your starting point of force application (not from your origin!)<br>
     DONT FORGET TO PUT -ve SIGN IF YOUR FORCE IS DOWNWARD.<br>
   </p>
 
@@ -84,16 +79,14 @@
       </thead>
       <tbody>
         <tr>
-          <td><input type="number" class="form-control" name="idistance" required></td>
-          <td><input type="number" class="form-control" name="fdistance" required></td>
-          <td><input type="text" class="form-control" name="localeqn" placeholder="e.g. 2*x+5" required></td>
-          <td>
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
-          </td>
+          <td><input type="number" class="form-control" name="idistance" placeholder="Enter Starting point of force"></td>
+          <td><input type="number" class="form-control" name="fdistance" placeholder="Enter Ending point of force" required></td>
+          <td><input type="text" class="form-control" name="localeqn" placeholder="e.g. 2*x+5 or x**2 (-ve for downward, wrt start)" required></td>
+          <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td>
         </tr>
       </tbody>
     </table>
-    <button type="button" class="btn btn-primary mt-2" onclick="addRow('dataTable2')">Add Row</button>
+    <button type="button" class="btn btn-primary mt-2" onclick="addRow('dataTable2')">Add DISTRIBUTED Force</button>
   </div>
 
   <!-- Submit Button -->
@@ -103,48 +96,53 @@
 
 </div>
 
-
 <script>
 function addRow(tableId) {
   const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
   const firstRow = tbody.rows[0];
   const newRow = firstRow.cloneNode(true);
 
-  // Clear inputs and keep required attribute
   const inputs = newRow.getElementsByTagName('input');
-  for (let i = 0; i < inputs.length; i++) {
-    inputs[i].value = "";
-    inputs[i].setAttribute("required", "");
-  }
-
+  for (let input of inputs) input.value = "";
   tbody.appendChild(newRow);
 }
 
 function removeRow(button) {
   const row = button.closest('tr');
   const tbody = row.parentNode;
-  if (tbody.rows.length > 1) { // keep at least one row
-    tbody.removeChild(row);
-  } else {
-    alert("At least one row must remain.");
-  }
+  if (tbody.rows.length > 1) tbody.removeChild(row);
+  else alert("At least one row must remain.");
 }
 
 function submitAll() {
-  const lengthA = document.getElementById('lengthaInput');
-  const lengthB = document.getElementById('lengthbInput');
-  const lengthC = document.getElementById('lengthcInput');
+  const lengthA = parseFloat(document.getElementById('lengthaInput').value);
+  const lengthB = parseFloat(document.getElementById('lengthbInput').value);
+  const lengthC = parseFloat(document.getElementById('lengthcInput').value);
 
-  if (!lengthA.value || !lengthB.value || !lengthC.value) {
+  if (!lengthA || !lengthB || !lengthC) {
     alert("Please enter all beam lengths!");
     return;
   }
 
+  const beamLength = lengthA + lengthB + lengthC;
+
   const checkTable = tableId => {
     const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
     for (let row of tbody.rows) {
-      for (let input of row.getElementsByTagName('input')) {
+      const inputs = row.getElementsByTagName('input');
+      for (let input of inputs) {
         if (!input.value) { alert("Please fill all fields!"); input.focus(); return false; }
+      }
+
+      if (tableId === 'dataTable') {
+        const pos = parseFloat(inputs[0].value);
+        if (pos < 0 || pos > beamLength) { alert(`Point force distance must be between 0 and ${beamLength}`); inputs[0].focus(); return false; }
+      } else if (tableId === 'dataTable2') {
+        const start = parseFloat(inputs[0].value);
+        const end = parseFloat(inputs[1].value);
+        if (start < 0 || start > beamLength) { alert(`Distributed force start must be between 0 and ${beamLength}`); inputs[0].focus(); return false; }
+        if (end < 0 || end > beamLength) { alert(`Distributed force end must be between 0 and ${beamLength}`); inputs[1].focus(); return false; }
+        if (start > end) { alert("Distributed force start cannot be greater than end"); inputs[0].focus(); return false; }
       }
     }
     return true;
@@ -156,7 +154,7 @@ function submitAll() {
     const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
     let data = [];
     for (let row of tbody.rows) {
-      let rowObj = {};
+      const rowObj = {};
       const inputs = row.getElementsByTagName('input');
       for (let input of inputs) rowObj[input.name || 'col'] = input.value;
       data.push(rowObj);
@@ -165,9 +163,9 @@ function submitAll() {
   };
 
   const finalData = {
-    lengthA: parseFloat(lengthA.value),
-    lengthB: parseFloat(lengthB.value),
-    lengthC: parseFloat(lengthC.value),
+    lengthA: lengthA,
+    lengthB: lengthB,
+    lengthC: lengthC,
     table1: extractTableData('dataTable'),
     table2: extractTableData('dataTable2')
   };
@@ -175,13 +173,11 @@ function submitAll() {
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = '/simple';
-
   const input = document.createElement('input');
   input.type = 'hidden';
   input.name = 'json_data';
   input.value = JSON.stringify(finalData);
   form.appendChild(input);
-
   document.body.appendChild(form);
   form.submit();
 }

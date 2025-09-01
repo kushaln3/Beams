@@ -214,7 +214,7 @@ class getForces:
 
 
 
-    def sfd(self):
+    def sfd(self, res=200):
         plt.figure(1)
         fig, ax1 = plt.subplots()
         plt.axhline(y=0, lw=1, color='k')
@@ -236,7 +236,7 @@ class getForces:
         for i in breakpoints:
 
             x1 = i
-            x_vals = np.linspace(x0, x1, 200)
+            x_vals = np.linspace(x0, x1, res)
 
 
 
@@ -288,7 +288,7 @@ class getForces:
 
 
 
-    def bmd(self):
+    def bmd(self, res=200):
         plt.figure(2)
         fig, ax1 = plt.subplots()
         plt.axhline(y=0, lw=1, color='k')
@@ -305,7 +305,7 @@ class getForces:
         print('\n\nPlotting BMD VALUES...')
         for i in breakpoints:
             x1 = i
-            x_vals = np.linspace(x0, x1, 200)
+            x_vals = np.linspace(x0, x1, res)
 
 
 
