@@ -67,7 +67,7 @@ def canti():
         json_data = request.form.get('json_data')
         data = json.loads(json_data)
 
-        lengtha = data.get('length')
+        lengthb = data.get('length')
         table1 = data.get('table1', [])
         table2 = data.get('table2', [])
 
@@ -75,7 +75,7 @@ def canti():
         dF = pd.DataFrame(table2, columns=['idistance', 'fdistance', 'localeqn',  'eqforce', 'eqdistance', 'moment'])  # distributed forces
         print(pF)
         print(dF)
-        fig1, fig2 = beam.canti(lengtha, pF,dF)
+        fig1, fig2 = beam.canti(lengthb, pF,dF)
 
         
 

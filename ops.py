@@ -46,11 +46,12 @@ def plot_to_img(fig):
 
 
 class getForces:
-    def __init__(self, length, lengthb, lengthc, isWeb):
-        self.length = length
-        self.lengtha = length-lengthb-lengthc
-        self.lengthb = lengthb
+    def __init__(self, lengtha, lengthb, lengthc, isWeb, btype):
+        self.lengtha = lengtha
         self.lengthc = lengthc
+        self.lengthb = lengthb
+        self.length = lengtha+lengthb+lengthc
+        self.btype = btype
         self.isWeb = isWeb
         
 
@@ -164,27 +165,29 @@ class getForces:
 
     def Reactions(self): #takes force dataframe as argument and returns reactions r1 and r2 at the joints 
 
-        if self.lengthb == None:
+        if self.btype == 2:
             self.lengthb = self.length
 
             R1 = -(self.dF['eqforce'].sum() + self.pF['force'].sum())
-            self.R1 = R1
-            self.R2 = 0
-            self.pF.loc[len(self.pF)] = [0, R1, 0]
-            self.pF.loc[len(self.pF)] = [self.lengthb, self.R2, 0]
-
-
-
-        elif self.lengthb == self.length:
-            R2 = -(self.dF['moment'].sum() + self.pF['moment'].sum())/self.lengthb
-            R1 = -(self.dF['eqforce'].sum() + self.pF['force'].sum()) - R2
-
-            
-            self.pF.loc[len(self.pF)] = [0, R1, 0]
-            self.pF.loc[len(self.pF)] = [self.length, R2, self.length*R2]
-
+            R2 = 0
             self.R1 = R1
             self.R2 = R2
+            self.pF.loc[len(self.pF)] = [0, R1, 0]
+            self.pF.loc[len(self.pF)] = [self.lengthb, self.R2, 0]
+            print('her is ', self.pF)
+
+
+
+        # elif self.btype == 1:
+        #     R2 = -(self.dF['moment'].sum() + self.pF['moment'].sum())/self.lengthb
+        #     R1 = -(self.dF['eqforce'].sum() + self.pF['force'].sum()) - R2
+
+            
+        #     self.pF.loc[len(self.pF)] = [0, R1, 0]
+        #     self.pF.loc[len(self.pF)] = [self.length, R2, self.length*R2]
+
+        #     self.R1 = R1
+        #     self.R2 = R2
 
         
         else:

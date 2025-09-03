@@ -16,7 +16,7 @@ class Beam:
 
     def simple(self, lengthb = None, pF = None, dF = None):
         if self.isWeb == True:
-            gF = ops.getForces(lengthb, lengthb, 0, isWeb = self.isWeb) #initialize getForces object, in simple beam lengthb = length
+            gF = ops.getForces(0, lengthb, 0, isWeb = self.isWeb, btype=1) #initialize getForces object, in simple beam lengthb = length
             
             #takes point forces input from user # pF is a database of point forces
             pF = gF.getPforces(pF) #['distance', 'force', 'moment']
@@ -27,7 +27,7 @@ class Beam:
 
         else:
             length = int(input('Enter length of beam: '))
-            gF = ops.getForces(length, length, 0, isWeb = self.isWeb) #initialize getForces object, in simple beam lengthb = length
+            gF = ops.getForces(0, length, 0, isWeb = self.isWeb, btype=1) #initialize getForces object, in simple beam lengthb = length
 
             #takes point forces input from user # pF is a database of point forces
             pF = gF.getPforces(pF) #['distance', 'force', 'moment']
@@ -48,10 +48,10 @@ class Beam:
             return fig1, fig2
 
 
-    def canti(self,lengtha = None, pF = None,dF = None ):
-        length = int(input('Enter length of beam: '))
+    def canti(self,lengthb = None, pF = None,dF = None ):
         if self.isWeb == False:
-            gF = ops.getForces(length, None, 0, isWeb=False) #initialize getForces object, in cantiliver beam pass only length, others must be None
+            length = int(input('Enter length of beam: '))
+            gF = ops.getForces(0, length, 0, isWeb=False, btype = 2) #initialize getForces object, in cantiliver beam pass only length, others must be None
 
             #takes point forces input from user # pF is a database of point forces
 
@@ -63,7 +63,7 @@ class Beam:
             dF = gF.getDforces() #['idistance', 'fdistance', 'eqn', 'eqforce', 'eqdistance', 'moment']
 
         else:
-            gF = ops.getForces(length, None, 0, isWeb=True) #initialize getForces object, in cantiliver beam pass only length, others must be None
+            gF = ops.getForces(0, lengthb, 0, isWeb=True,btype=2) #initialize getForces object, in cantiliver beam pass only length, others must be None
             #takes point forces input from user # pF is a database of point forces
 
             pF = gF.getPforces(pF) #['distance', 'force', 'moment']
@@ -74,7 +74,10 @@ class Beam:
             dF = gF.getDforces(dF) #['idistance', 'fdistance', 'eqn', 'eqforce', 'eqdistance', 'moment']
 
 
-        R1,R2,moment = gF.Reactions() # calculates reaction forces at r1 and r2
+        R1,R2,moment = gF.Reactions()
+        print("1111111111111111111111got111111111111111111    ", R1,R2)
+        
+         # calculates reaction forces at r1 and r2
         # if moment>0:
         #     self.printex.unstable() # checks if system is statically stable ie. moment<=0 
         
@@ -93,7 +96,7 @@ class Beam:
             lengthc = float(input('Enter length of beam part c: '))
             length = lengtha + lengthb + lengthc
 
-            gF = ops.getForces(length, lengthb, lengthc, isWeb=False) #initialize getForces object, pass all lengths for mixed beam
+            gF = ops.getForces(length, lengthb, lengthc, isWeb=False, btype=3) #initialize getForces object, pass all lengths for mixed beam
 
             #takes point forces input from user # pF is a database of point forces
 
@@ -109,7 +112,7 @@ class Beam:
 
             length = lengtha + lengthb + lengthc
 
-            gF = ops.getForces(length, lengthb, lengthc, isWeb=True) #initialize getForces object, pass all lengths for mixed beam
+            gF = ops.getForces(length, lengthb, lengthc, isWeb=True, btype=3) #initialize getForces object, pass all lengths for mixed beam
 
             #takes point forces input from user # pF is a database of point forces
 
